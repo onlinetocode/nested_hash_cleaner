@@ -20,7 +20,7 @@ Or install it yourself as:
 
 ## Usage
 
-### Clean nested hash with array of hashes inside
+### Clean nested hash with array of hashes inside based on key
 
 ```ruby
 carpool = { jenny: {
@@ -92,7 +92,7 @@ carpool = NestedHashCleaner.clean(carpool, :max)
 
 ```
 
-### Clean array of hashes
+### Clean array of hashes based on key
 
 ```ruby
 # Array of hashes
@@ -105,6 +105,93 @@ list =  [
 list = NestedHashCleaner.clean(list, :age)
 # => [{:alex=>{:city=>"New York"}}, {:jenny=>{:city=>"New York"}}]
 ```
+
+### Clean nested hash with array of hashes inside based on value
+
+```ruby
+carpool = { jenny: {
+                driving_days: [{
+                    day: 'monday',
+                    coworker: {
+                        max: true,
+                        justine: true,
+                        alex: true
+                        }
+                    }]
+            },
+            max: {
+                driving_days: [{
+                    day: 'thuesday',
+                    coworker: {
+                        max: true,
+                        justine: true,
+                        jenny: true
+                        }
+                    }]
+            },
+            alex: {
+                driving_days: [{
+                    day: 'thursday',
+                    coworker: {
+                        max: true,
+                        justine: false,
+                        jenny: true
+                        }
+                },
+                {
+                    day: 'friday',
+                    coworker: {
+                        max: false,
+                        justine: false,
+                        jenny: true
+                        }
+                }]
+            }
+        }
+
+# remove false entries from carpool hash:
+carpool = NestedHashCleaner.clean_with_value(carpool, false)
+
+# {:jenny=>{
+#     :driving_days=>[{
+#             :day=>"monday", :coworker=>{:max=>true, :justine=>true, :alex=>true}
+#         }]
+#     },
+#  :max=>{
+#     :driving_days=>[{
+#             :day=>"thuesday", :coworker=>{:max=>true, :justine=>true, :jenny=>true}
+#         }]
+#     },
+#  :alex=>{
+#     :driving_days=>[{
+#             :day=>"thursday", :coworker=>{:max=>true, :jenny=>true}
+#         },
+#         {
+#             :day=>"friday", :coworker=>{:jenny=>true}
+#         },
+#         {
+#             :day=>"friday", :coworker=>{:jenny=>true}
+#         }]
+#     }
+# }
+
+```
+### Clean array of hashes based on value
+
+```ruby
+# Array of hashes
+
+list =  [
+            { alex:  {city: 'New York', age: 38} },
+            { jenny: {city: 'New York', age: 39} }
+        ]
+
+NestedHashCleaner.clean_with_value(list, 'New York')
+# [{:alex=>{:age=>38}}, {:jenny=>{:age=>39}}]
+```
+
+
+
 
 ## Development
 
